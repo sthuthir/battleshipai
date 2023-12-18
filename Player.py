@@ -6,26 +6,28 @@ def getMoveCount(board):
         for col in range(0, 10):
             if board[row][col] == 'X' or board[row][col] == '*':
                 moves += 1
+    #print(moves)
     return moves
 
 def getNumHits(board):
     hits = 0
-    for row in range(0, 10):
+    for row in range (0, 10):
         for col in range(0, 10):
             if board[row][col] == 'X':
                 hits += 1
+    #print("Hits = ", hits)
     return hits
 
 def check(board, row, col, direction):
     if direction == 'Up':
         return board[max(row - 1, 0)][col]
     if direction == 'Down':
-        return board[min(row + 1, 9)][col]
+        return board[min(row + 1, 10)][col]
     if direction == 'Left':
         return board[row][max(col - 1, 0)]
     if direction == 'Right':
-        return board[row][min(col + 1, 9)]
-    
+        return board[row][min(col + 1, 10)]
+
 def makeMove(board):
     probabilities = calculateProbabilities(board)
     sorted_positions = sortProbabilities(probabilities)
@@ -63,4 +65,3 @@ def isValid(row, col, board):
 # Example usage:
 # move = makeMove(board)
 # print("AI Move:", move)
-
