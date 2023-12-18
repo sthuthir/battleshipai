@@ -25,18 +25,8 @@ def check(board, row, col, direction):
         return board[row][max(col - 1, 0)]
     if direction == 'Right':
         return board[row][min(col + 1, 9)]
-
-
+    
 def makeMove(board):
-    hit_rows, hit_cols = findHits(board)
-
-    if hit_rows:
-        return [random.choice(hit_rows) + 1, random.randint(1, 10)]
-
-    if hit_cols:
-        return [random.randint(1, 10), random.choice(hit_cols) + 1]
-
-    # If no hits, resort to the probability density strategy
     probabilities = calculateProbabilities(board)
     sorted_positions = sortProbabilities(probabilities)
 
@@ -45,15 +35,6 @@ def makeMove(board):
         row, col = position
         if isValid(row, col, board):
             return [row + 1, col + 1]
-
-    # If no valid move is found, return a random move
-    return [random.randint(1, 10), random.randint(1, 10)]
-
-def findHits(board):
-    hit_rows = [row for row in range(10) if 'X' in board[row]]
-    hit_cols = [col for col in range(10) if 'X' in [board[row][col] for row in range(10)]]
-
-    return hit_rows, hit_cols
 
 def calculateProbabilities(board):
     probabilities = [[0] * 10 for _ in range(10)]
@@ -78,3 +59,8 @@ def sortProbabilities(probabilities):
 
 def isValid(row, col, board):
     return 0 <= row < 10 and 0 <= col < 10 and board[row][col] not in ('X', '*')
+
+# Example usage:
+# move = makeMove(board)
+# print("AI Move:", move)
+
