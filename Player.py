@@ -25,7 +25,7 @@ def check(board, row, col, direction):
         return board[row][max(col - 1, 0)]
     if direction == 'Right':
         return board[row][min(col + 1, 9)]
-    
+
 def makeMove(board):
     probabilities = calculateProbabilities(board)
     sorted_positions = sortProbabilities(probabilities)
@@ -37,18 +37,25 @@ def makeMove(board):
             return [row + 1, col + 1]
 
 def calculateProbabilities(board):
-    probabilities = [[0] * 10 for _ in range(10)]
+    probabilities = [[1.0] * 10 for _ in range(10)]
 
     for row in range(10):
         for col in range(10):
             if board[row][col] == 'X' or board[row][col] == '*':
+                probabilities[row][col] = 0.0  # Already hit or missed, so no chance of ship presence
                 continue
 
-            # Calculate probability based on neighboring hits
+            # Adjust probability based on neighboring hits and misses
             for i in range(max(0, row - 1), min(10, row + 2)):
                 for j in range(max(0, col - 1), min(10, col + 2)):
                     if board[i][j] == 'X':
-                        probabilities[row][col] += 1
+                        probabilities[row][col] *= 1.2  # Increase probability if neighboring hit
+                    elif board[i][j] == '*':
+                        probabilities[row][col] *= 0.8  # Decrease probability if neighboring miss
+
+    # Normalize probabilities to sum to 1
+    total_probability = sum(sum(probabilities[row]) for row in range(10))
+    probabilities = [[prob / total_probability for prob in row] for row in probabilities]
 
     return probabilities
 
@@ -63,4 +70,3 @@ def isValid(row, col, board):
 # Example usage:
 # move = makeMove(board)
 # print("AI Move:", move)
-
