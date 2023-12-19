@@ -1,6 +1,8 @@
 from random import randint
 import os
 import Player
+import matplotlib.pyplot as plt
+import numpy as np
 
 # Ship Class
 class Ship:
@@ -70,6 +72,8 @@ num_ships = 5
 max_ship_size = 5
 min_ship_size = 2
 num_turns = 100
+num_simulations = 100
+
 
 # Create lists
 ship_list = []
@@ -166,15 +170,51 @@ while temp < num_ships:
         ship_list.append(Ship(ship_info['size'], ship_info['orientation'], ship_info['location']))
         temp += 1
 del temp
+# Heatmap Visualization
+def visualize_heatmap(moves, title="Player's Moves Heatmap"):
+    heatmap = np.zeros((row_size, col_size))
+
+    for move in moves:
+        row, col = move
+        heatmap[row - 1][col - 1] += 1
+
+    plt.imshow(heatmap, cmap='hot', interpolation='nearest')
+    plt.title(title)
+    plt.colorbar()
+    plt.show()
 
 # Play Game
 os.system('cls')
 print_board(board_display)
+total_turns = 0
+player_moves_list = []  # List to store player.py's moves for each simulation
 
-for turn in range(num_turns):
-    print("Turn:", turn + 1, "of", num_turns)
-    print("Ships left:", len(ship_list))
-    print()
+for _ in range(num_simulations):
+    board = [[0] * col_size for _ in range(row_size)]
+    board_display = [["O"] * col_size for _ in range(row_size)]
+    ship_list = []
+
+    temp = 0
+    ship_sizes = [5, 4, 3, 3, 2]
+
+    while temp < num_ships:
+        ship_info = random_location(ship_sizes[temp])
+        if ship_info == 'None':
+            continue
+        else:
+            ship_list.append(Ship(ship_info['size'], ship_info['orientation'], ship_info['location']))
+            temp += 1
+    del temp
+
+    os.system('cls')
+    print_board(board_display)
+
+    player_moves = []  # List to store player.py's moves for this simulation
+
+    for turn in range(num_turns):
+         print("Turn:", turn + 1, "of", num_turns)
+         print("Ships left:", len(ship_list))
+         print()
 
     guess_coords = {}
     while True:
@@ -209,7 +249,20 @@ for turn in range(num_turns):
     print_board(board_display)
 
     if not ship_list:
-        break
+            total_turns += turn + 1
+            break
+            # Store player.py's move for visualization
+    player_moves.append([guess_coords['row'] + 1, guess_coords['col'] + 1])
+
+player_moves_list.append(player_moves)
+
+# Calculate average number of turns
+average_turns = total_turns / num_simulations
+print(f"Average number of turns over {num_simulations} simulations: {average_turns}")
+
+# Visualize heatmap of player.py's moves for each simulation
+for i, moves in enumerate(player_moves_list):
+    visualize_heatmap(moves, title=f"Simulation {i+1} - Player's Moves Heatmap")
 
 # End Game
 if ship_list:
