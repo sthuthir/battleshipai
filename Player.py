@@ -1,5 +1,5 @@
 import random
-
+#code 2
 def getMoveCount(board):
     moves = 0
     for row in range(0, 10):
